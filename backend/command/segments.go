@@ -1,6 +1,6 @@
 package command
 
-type CommandSegments []CommandSegment
+import "encoding/json"
 
 type CommandSegment struct {
 	Key        string
@@ -9,10 +9,25 @@ type CommandSegment struct {
 	IsValuable bool
 }
 
-func (cs *CommandSegments) ToString() (string, error) {
-	return "", nil
+type CommandSegments []CommandSegment
+
+func NewCommandSegments(str string) (*CommandSegments, error) {
+	segments := make(CommandSegments, 0)
+	if err := segments.Load(str); err != nil {
+		return nil, err
+	}
+	return &segments, nil
 }
 
-func (cs *CommandSegments) Load(encoded string) error {
-	return nil
+func (segments *CommandSegments) ToString() (string, error) {
+	bytes, err := json.Marshal(*segments)
+	if err != nil {
+		return "", err
+	}
+
+	return string(bytes), nil
+}
+
+func (segments *CommandSegments) Load(str string) error {
+	return json.Unmarshal([]byte(str), &segments)
 }
