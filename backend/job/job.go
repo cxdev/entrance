@@ -9,13 +9,15 @@ type Job struct {
 	platform.BaseEntity
 	Status    JobStatus
 	Command   *command.Command
-	Arguments Arguments
+	Arguments *Arguments
 }
 
 func New(command *command.Command, arguments string) (*Job, error) {
-	var arg Arguments
-	if err := arg.Load(arguments); err != nil {
+	arg, err := NewArguments(arguments)
+
+	if err != nil {
 		return nil, err
 	}
+
 	return &Job{platform.BaseEntity{}, WAITING, command, arg}, nil
 }
