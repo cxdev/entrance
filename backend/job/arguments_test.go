@@ -98,3 +98,34 @@ func TestArguments_Load(t *testing.T) {
 		})
 	}
 }
+
+func TestArguments_Get(t *testing.T) {
+	argsCases := testArguments()
+
+	type args struct {
+		key string
+	}
+	tests := []struct {
+		name      string
+		arguments *Arguments
+		args      args
+		want      string
+		want1     bool
+	}{
+		{"test 1", &argsCases[0], args{"k1"}, "v1", true},
+		{"test 2", &argsCases[0], args{"k2"}, "", false},
+		{"test 3", &argsCases[1], args{"k1"}, "v1", true},
+		{"test 4", &argsCases[1], args{"k2"}, "v2", true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1 := tt.arguments.Get(tt.args.key)
+			if got != tt.want {
+				t.Errorf("Arguments.Get() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("Arguments.Get() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}

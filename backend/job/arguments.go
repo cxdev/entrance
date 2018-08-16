@@ -24,3 +24,8 @@ func (arguments *Arguments) ToString() (string, error) {
 func (arguments *Arguments) Load(str string) error {
 	return json.Unmarshal([]byte(str), &arguments)
 }
+
+func (arguments *Arguments) Get(key string) (string, bool) {
+	val, ok := (*arguments)[key]
+	return val, ok
+}
