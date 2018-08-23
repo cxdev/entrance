@@ -1,6 +1,7 @@
 package entrance
 
 import (
+	"entrance/backend/exec"
 	"entrance/backend/job"
 	"entrance/backend/platform"
 	"time"
@@ -8,6 +9,7 @@ import (
 
 type JobService struct {
 	*platform.DB
+	exec.ExecContextBuilder
 }
 
 type JobQuery struct {
@@ -39,5 +41,22 @@ func (s *JobService) RemoveJob(jobID int) error {
 }
 
 func (s *JobService) ExecuteJob(job *job.Job) error {
+	jobTag := string(job.Id)
+	sysCmd := job.SysCmd
+
+	execContext := s.CreateContext(jobTag, sysCmd)
+	execCmd, err := execContext.CreateExecCmd()
+	if err != nil {
+		return err
+	}
+
+	err = execCmd.Start()
+	if err != nil {
+		return err
+	}
+
+	// TODO: consider for wait and kill case
+	// cmd.Wait()
+	// cmd.Process.Kill()
 	return nil
 }
