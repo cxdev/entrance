@@ -10,7 +10,7 @@ type App struct {
 	JobService
 }
 
-func (app *App) AddCommand(name string, commandType int, segments string) int {
+func (app *App) AddCommand(name string, commandType command.CommandType, segments string) int {
 	command, _ := command.New(name, commandType, segments)
 	return app.SaveCommand(command)
 }
