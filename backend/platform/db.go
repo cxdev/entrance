@@ -22,6 +22,7 @@ func Open(dataSourceName string) (*DB, error) {
 var createTableStatements = []string{
 	`CREATE TABLE IF NOT EXISTS commands (
 			id INTEGER PRIMARY KEY AUTOINCREMENT, 
+			name TEXT,
 			process_type INTEGER,
 			command_segments TEXT,
 			created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -31,8 +32,8 @@ var createTableStatements = []string{
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			status INTEGER,
 			command_id INTEGER,
-			system_cmd TEXT,
 			arguments TEXT,
+			system_cmd TEXT,
 			created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		)`,
