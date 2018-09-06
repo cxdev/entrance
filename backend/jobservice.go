@@ -4,7 +4,6 @@ import (
 	"entrance/backend/exec"
 	"entrance/backend/job"
 	"entrance/backend/platform"
-	"time"
 )
 
 type JobService struct {
@@ -12,19 +11,11 @@ type JobService struct {
 	exec.ExecContextBuilder
 }
 
-type JobQuery struct {
-	UpdatedFrom time.Time
-	Updatedto   time.Time
-	JobID       int
-	JobStatus   int
-	CommandQuery
-}
-
-func (s *JobService) Job(jobId int) *job.Job {
+func (s *JobService) Job(jobId int64) *job.Job {
 	return nil
 }
 
-func (s *JobService) Jobs(query *JobQuery) *[]job.Job {
+func (s *JobService) Jobs(queryCondition *platform.QueryCondition) *[]job.Job {
 	return nil
 }
 
