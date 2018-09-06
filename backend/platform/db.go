@@ -2,6 +2,8 @@ package platform
 
 import (
 	"database/sql"
+	"fmt"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -20,20 +22,11 @@ type QueryPlan struct {
 	queries []*Query
 }
 
-// Open returns a DB reference for a data source.
-func Open(dataSourceName string) (*DB, error) {
-	db, err := sql.Open("postgres", dataSourceName)
-	if err != nil {
-		return nil, err
-	}
-	return &DB{db}, nil
-}
-
 var createTableStatements = []string{
 	`CREATE TABLE IF NOT EXISTS commands (
 			id INTEGER PRIMARY KEY AUTOINCREMENT, 
 			name TEXT,
-			process_type INTEGER,
+			command_type INTEGER,
 			command_segments TEXT,
 			created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -82,10 +75,6 @@ func (db *DB) NewQueryPlan() *QueryPlan {
 	return &QueryPlan{db, []*Query{}}
 }
 
-func (db *DB) Exec(query string, args ...interface{}) (res sql.Result, err error) {
-	return db.NewQueryPlan().AppendQuery(query, args).Exec()
-}
-
 func (qp *QueryPlan) AppendQuery(query string, args ...interface{}) *QueryPlan {
 	qp.queries = append(qp.queries, &Query{query, args})
 	return qp
@@ -103,4 +92,36 @@ func (qp *QueryPlan) Exec() (res sql.Result, err error) {
 
 	err = tx.Commit()
 	return
+}
+
+type QueryCondition map[string]interface{}
+
+func NewQueryCondition() *QueryCondition {
+	qc := make(QueryCondition)
+	return &qc
+}
+
+func (qc *QueryCondition) addCondition(col string, val interface{}) {
+	(*qc)[col] = val
+}
+
+func (qc *QueryCondition) separateConditionsWithValues() (string, *[]interface{}) {
+	var conditionItems []string
+	var values []interface{}
+	for key, value := range *qc {
+		conditionItems = append(conditionItems, fmt.Sprintf("%s = ?", key))
+		values = append(values, value)
+	}
+	return strings.Join(conditionItems, " AND "), &values
+}
+
+func (db *DB) QueryByCondition(queryBase string, queryCondition *QueryCondition) (*sql.Rows, error) {
+	conditions, values := queryCondition.separateConditionsWithValues()
+	var sql string
+	if len(*values) != 0 {
+		sql = fmt.Sprintf("%s where %s", queryBase, conditions)
+	} else {
+		sql = queryBase
+	}
+	return db.Query(sql, values)
 }
