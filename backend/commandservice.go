@@ -1,6 +1,7 @@
 package entrance
 
 import (
+	"database/sql"
 	"entrance/backend/command"
 	"entrance/backend/platform"
 	"time"
@@ -10,21 +11,51 @@ type CommandService struct {
 	*platform.DB
 }
 
-type CommandQuery struct {
-	UpdatedFrom time.Time
-	Updatedto   time.Time
-	CommandId   int
-	ProcessType int
-}
+func (s *CommandService) Command(cid int64) *command.Command {
+	qc := platform.QueryCondition{"id": cid}
 
-func (s *CommandService) Command(cid int) *command.Command {
+	commands := s.Commands(&qc)
+	if len(*commands) > 0 {
+		return (*commands)[0]
+	}
 	return nil
 }
 
-func (s *CommandService) Commands(query *CommandQuery) *[]command.Command {
-	return nil
+func (s *CommandService) Commands(queryCondition *platform.QueryCondition) *[]*command.Command {
+	var (
+		id          int64
+		name        string
+		commandType command.CommandType
+		segments    string
+		created     time.Time
+		updated     time.Time
+	)
+
+	sqlBase := "SELECT * FROM commands"
+
+	rows, err := s.QueryByCondition(sqlBase, queryCondition)
+	if err != nil {
+		return nil
+	}
+
+	var commands []*command.Command
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(&id, &name, &commandType, &segments, &created, &updated)
+		command, _ := command.New(name, commandType, segments)
+		command.SetupEntity(id, created, updated)
+		commands = append(commands, command)
+	}
+
+	return &commands
 }
 
-func (s *CommandService) SaveCommand(command *command.Command) (cid int) {
-	return -1
+// TODO: add update case by id
+func (s *CommandService) SaveCommand(command *command.Command) (sql.Result, error) {
+	sql := "INSERT OR REPLACE INTO commands(name, command_type, command_segments) VALUES(?, ?, ?)"
+	commandSegments, err := command.CommandSegments.ToString()
+	if err != nil {
+		return nil, err
+	}
+	return s.Exec(sql, command.Name, command.CommandType, commandSegments)
 }
