@@ -50,12 +50,20 @@ func (s *CommandService) Commands(queryCondition *platform.QueryCondition) *[]*c
 	return &commands
 }
 
-// TODO: add update case by id
 func (s *CommandService) SaveCommand(command *command.Command) (sql.Result, error) {
-	sql := "INSERT OR REPLACE INTO commands(name, command_type, command_segments) VALUES(?, ?, ?)"
 	commandSegments, err := command.CommandSegments.ToString()
 	if err != nil {
 		return nil, err
 	}
-	return s.Exec(sql, command.Name, command.CommandType, commandSegments)
+	var args = []interface{}{command.Name, command.CommandType, commandSegments}
+	var sql string
+
+	if command.IsEntity() {
+		sql = "UPDATE commands SET name=?, command_type=?, command_segments=? WHERE id=?"
+		args = append(args, command.Id)
+	} else {
+		sql = "INSERT INTO commands(name, command_type, command_segments) VALUES(?, ?, ?)"
+	}
+
+	return s.Exec(sql, args...)
 }
