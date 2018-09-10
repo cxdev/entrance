@@ -15,7 +15,7 @@ func (s *CommandService) Command(cid int64) *command.Command {
 	qc := platform.QueryCondition{"id": cid}
 
 	commands := s.Commands(&qc)
-	if len(*commands) > 0 {
+	if commands != nil && len(*commands) > 0 {
 		return (*commands)[0]
 	}
 	return nil
