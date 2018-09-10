@@ -105,23 +105,23 @@ func (qc *QueryCondition) addCondition(col string, val interface{}) {
 	(*qc)[col] = val
 }
 
-func (qc *QueryCondition) separateConditionsWithValues() (string, *[]interface{}) {
+func (qc *QueryCondition) separateConditionsWithValues() (string, []interface{}) {
 	var conditionItems []string
 	var values []interface{}
 	for key, value := range *qc {
-		conditionItems = append(conditionItems, fmt.Sprintf("%s = ?", key))
+		conditionItems = append(conditionItems, fmt.Sprintf("%s=?", key))
 		values = append(values, value)
 	}
-	return strings.Join(conditionItems, " AND "), &values
+	return strings.Join(conditionItems, " AND "), values
 }
 
 func (db *DB) QueryByCondition(queryBase string, queryCondition *QueryCondition) (*sql.Rows, error) {
 	conditions, values := queryCondition.separateConditionsWithValues()
 	var sql string
-	if len(*values) != 0 {
-		sql = fmt.Sprintf("%s where %s", queryBase, conditions)
+	if len(values) != 0 {
+		sql = fmt.Sprintf("%s WHERE %s;", queryBase, conditions)
 	} else {
 		sql = queryBase
 	}
-	return db.Query(sql, values)
+	return db.Query(sql, values...)
 }
