@@ -9,7 +9,7 @@ import (
 
 func setup() (*platform.DB, []*command.Command) {
 	// var TestDB, _ = platform.CreateDB("/tmp/ut.db")
-	var TestDB, _ = platform.CreateDB("file::memory:?mode=memory&cache=shared")
+	var TestDB, _ = platform.CreateDB("file::memory:?mode=memory")
 	var TestCommand1, _ = command.New("ls", command.BATCH, `[{"Key":"k1","Base":"b1","IsRequired":false,"IsValuable":false}]`)
 	var TestCommand2, _ = command.New("cmd2", command.BATCH, `[{"Key":"k1","Base":"b1","IsRequired":false,"IsValuable":false}]`)
 	var TestCommand3, _ = command.New("ls", command.BATCH, `[{"Key":"k1","Base":"b1","IsRequired":true,"IsValuable":false}]`)
