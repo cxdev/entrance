@@ -25,7 +25,7 @@ func (app *App) AddCommand(name string, commandType command.CommandType, segment
 	return cid
 }
 
-func (app *App) AddJob(cid int64, arguments string) int {
+func (app *App) AddJob(cid int64, arguments string) int64 {
 	command := app.Command(cid)
 	job, _ := job.New(command, arguments)
 	jobID := app.SaveJob(job)
