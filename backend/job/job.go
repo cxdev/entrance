@@ -10,7 +10,7 @@ import (
 type Job struct {
 	platform.BaseEntity
 	Status    JobStatus
-	Command   *command.Command
+	CommandID int64
 	Arguments *Arguments
 	SysCmd    string
 }
@@ -28,7 +28,7 @@ func New(command *command.Command, arguments string) (*Job, error) {
 		return nil, err
 	}
 
-	return &Job{platform.BaseEntity{}, WAITING, command, arg, sysCmd}, nil
+	return &Job{platform.BaseEntity{}, WAITING, command.Id, arg, sysCmd}, nil
 }
 
 func CreateSysCmd(command *command.Command, arguments *Arguments) (string, error) {
