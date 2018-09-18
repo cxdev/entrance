@@ -19,3 +19,6 @@
 # ignore vendor packages
 vendor/*
 !vendor/vendor.json
+
+# ignore temp dir
+temp
