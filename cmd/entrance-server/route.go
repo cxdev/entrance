@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	entrance "entrance/backend"
+	"entrance/backend/command"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -18,6 +19,12 @@ type CommonResponse struct {
 	Data interface{}
 }
 
+type AddCommandReqBody struct {
+	Name        string              `json:"name"`
+	CommandType command.CommandType `json:"command_type"`
+	Segments    string              `json: "segments`
+}
+
 func (routeManager *RouteManager) ResponseJson(w http.ResponseWriter, data interface{}) {
 	js, err := json.Marshal(CommonResponse{data})
 	if err != nil {
@@ -30,6 +37,33 @@ func (routeManager *RouteManager) ResponseJson(w http.ResponseWriter, data inter
 
 func (routeManager *RouteManager) PONG(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	routeManager.ResponseJson(w, "PONG")
+}
+
+func (routeManager *RouteManager) AddCommand(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	if r == nil || r.Body == nil {
+		http.Error(w, "No request body", http.StatusBadRequest)
+		return
+	}
+	bodyData, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var body AddCommandReqBody
+	err = json.Unmarshal(bodyData, &body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	cid, err := routeManager.app.AddCommand(body.Name, body.CommandType, body.Segments)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	routeManager.ResponseJson(w, cid)
 }
 
 func (routeManager *RouteManager) ListCommands(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
@@ -65,7 +99,11 @@ func (routeManager *RouteManager) ExecuteCommand(w http.ResponseWriter, r *http.
 		return
 	}
 	arguments := string(body)
-	jobID := routeManager.app.AddJob(id, arguments)
+	jobID, err := routeManager.app.AddJob(id, arguments)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	routeManager.ResponseJson(w, jobID)
 }
 
@@ -87,8 +125,9 @@ func (routeManager *RouteManager) CheckJob(w http.ResponseWriter, r *http.Reques
 
 func (routeManager *RouteManager) SetupRoutes(router *httprouter.Router) {
 	router.GET("/ping", routeManager.PONG)
+	router.POST("/admin/command/add", routeManager.AddCommand)
 	router.GET("/command", routeManager.ListCommands)
-	router.GET("/command/:id/execute", routeManager.ExecuteCommand)
+	router.POST("/command/:id/execute", routeManager.ExecuteCommand)
 	router.GET("/command/:id/info", routeManager.CheckCommand)
 	router.GET("/job", routeManager.ListJobs)
 	router.GET("/job/:id/info", routeManager.CheckJob)
