@@ -10,25 +10,33 @@ type App struct {
 	JobService
 }
 
-func (app *App) AddCommand(name string, commandType command.CommandType, segments string) int64 {
-	command, _ := command.New(name, commandType, segments)
+func (app *App) AddCommand(name string, commandType command.CommandType, segments string) (int64, error) {
+	command, err := command.New(name, commandType, segments)
+	if err != nil {
+		return -1, err
+	}
+
 	result, err := app.SaveCommand(command)
 	if err != nil {
-		return -1
+		return -1, err
 	}
 
 	cid, err := result.LastInsertId()
 	if err != nil {
-		return -1
+		return -1, err
 	}
 
-	return cid
+	return cid, nil
 }
 
-func (app *App) AddJob(cid int64, arguments string) int64 {
+func (app *App) AddJob(cid int64, arguments string) (int64, error) {
 	command := app.Command(cid)
-	job, _ := job.New(command, arguments)
+	job, err := job.New(command, arguments)
+	if err != nil {
+		return -1, err
+	}
+
 	jobID := app.SaveJob(job)
 	go app.ExecuteJob(job)
-	return jobID
+	return jobID, nil
 }
