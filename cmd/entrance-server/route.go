@@ -20,9 +20,9 @@ type CommonResponse struct {
 }
 
 type AddCommandReqBody struct {
-	Name        string              `json:"name"`
-	CommandType command.CommandType `json:"command_type"`
-	Segments    string              `json: "segments`
+	Name        string                  `json:"name"`
+	CommandType command.CommandType     `json:"command_type"`
+	Segments    command.CommandSegments `json: "segments`
 }
 
 func (routeManager *RouteManager) ResponseJson(w http.ResponseWriter, data interface{}) {
@@ -57,7 +57,14 @@ func (routeManager *RouteManager) AddCommand(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	cid, err := routeManager.app.AddCommand(body.Name, body.CommandType, body.Segments)
+	// TODO refactor parameter to put segments instead of string
+	segments, err := body.Segments.ToString()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	cid, err := routeManager.app.AddCommand(body.Name, body.CommandType, segments)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
