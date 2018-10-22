@@ -31,12 +31,16 @@ func (app *App) AddCommand(name string, commandType command.CommandType, segment
 
 func (app *App) AddJob(cid int64, arguments string) (int64, error) {
 	command := app.Command(cid)
+	if command == nil {
+		return -1, nil
+	}
+
 	job, err := job.New(command, arguments)
 	if err != nil {
 		return -1, err
 	}
 
 	jobID := app.SaveJob(job)
-	go app.ExecuteJob(job)
+	go app.ExecuteJob(jobID)
 	return jobID, nil
 }

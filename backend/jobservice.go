@@ -4,6 +4,8 @@ import (
 	"entrance/backend/exec"
 	"entrance/backend/job"
 	"entrance/backend/platform"
+	"log"
+	"strconv"
 	"time"
 )
 
@@ -86,20 +88,19 @@ func (s *JobService) RemoveJob(jobID int) error {
 	return nil
 }
 
-func (s *JobService) ExecuteJob(job *job.Job) error {
-	jobTag := string(job.Id)
+func (s *JobService) ExecuteJob(jobID int64) error {
+	job := s.Job(jobID)
+	jobTag := strconv.FormatInt(jobID, 10)
 	sysCmd := job.SysCmd
 
 	execContext := s.CreateContext(jobTag, sysCmd)
-	execCmd, err := execContext.CreateExecCmd()
+	err := execContext.ExecCommand()
 	if err != nil {
+		log.Print(err)
 		return err
 	}
 
-	err = execCmd.Start()
-	if err != nil {
-		return err
-	}
+	log.Print("Done run command")
 
 	// TODO: consider for wait and kill case
 	// cmd.Wait()

@@ -1,9 +1,11 @@
 package exec
 
 import (
+	"log"
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 )
 
 type ExecContext struct {
@@ -26,23 +28,35 @@ func (builder *ExecContextBuilder) CreateContext(jobTag string, sysCmd string) *
 	}
 }
 
-func (context *ExecContext) CreateExecCmd() (*exec.Cmd, error) {
-	cmd := exec.Command(context.SysCmd)
+func (context *ExecContext) ExecCommand() error {
+	cmdSlice := strings.Split(context.SysCmd, " ")
+	cmd := exec.Command(cmdSlice[0], cmdSlice[1:]...)
+
+	err := os.MkdirAll(context.LogBase, os.ModePerm)
+	if err != nil {
+		return err
+	}
 
 	outfile, err := os.Create(context.OutputPath)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer outfile.Close()
 
 	errorfile, err := os.Create(context.Errorpath)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer errorfile.Close()
 
 	cmd.Stdout = outfile
 	cmd.Stderr = errorfile
 
-	return cmd, nil
+	err = cmd.Start()
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
+	return nil
 }

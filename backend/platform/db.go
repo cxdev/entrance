@@ -108,9 +108,11 @@ func (qc *QueryCondition) addCondition(col string, val interface{}) {
 func (qc *QueryCondition) separateConditionsWithValues() (string, []interface{}) {
 	var conditionItems []string
 	var values []interface{}
-	for key, value := range *qc {
-		conditionItems = append(conditionItems, fmt.Sprintf("%s=?", key))
-		values = append(values, value)
+	if qc != nil {
+		for key, value := range *qc {
+			conditionItems = append(conditionItems, fmt.Sprintf("%s=?", key))
+			values = append(values, value)
+		}
 	}
 	return strings.Join(conditionItems, " AND "), values
 }
