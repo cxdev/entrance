@@ -130,6 +130,21 @@ func (routeManager *RouteManager) CheckJob(w http.ResponseWriter, r *http.Reques
 	routeManager.ResponseJson(w, job)
 }
 
+func (routeManager *RouteManager) ReadJobResult(w http.ResponseWriter, r *http.Request, params httprouter.Params) {
+	idStr := params.ByName("id")
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	resultData, err := routeManager.app.ReadJobResult(id)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	routeManager.ResponseJson(w, resultData)
+}
+
 func (routeManager *RouteManager) SetupRoutes(router *httprouter.Router) {
 	router.GET("/ping", routeManager.PONG)
 	router.POST("/admin/command/add", routeManager.AddCommand)
@@ -138,4 +153,5 @@ func (routeManager *RouteManager) SetupRoutes(router *httprouter.Router) {
 	router.GET("/command/:id/info", routeManager.CheckCommand)
 	router.GET("/job", routeManager.ListJobs)
 	router.GET("/job/:id/info", routeManager.CheckJob)
+	router.GET("/job/:id/result", routeManager.ReadJobResult)
 }
