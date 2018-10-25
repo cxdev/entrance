@@ -1,6 +1,7 @@
 package exec
 
 import (
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -17,6 +18,11 @@ type ExecContext struct {
 
 type ExecContextBuilder struct {
 	LogRoot string
+}
+
+type ResultData struct {
+	OutputData *[]string
+	ErrorData  *[]string
 }
 
 func (builder *ExecContextBuilder) CreateContext(jobTag string, sysCmd string) *ExecContext {
@@ -59,4 +65,20 @@ func (context *ExecContext) ExecCommand() error {
 	}
 
 	return nil
+}
+
+func (context *ExecContext) ReadResult() (*ResultData, error) {
+	outputBytes, err := ioutil.ReadFile(context.OutputPath)
+	if err != nil {
+		return nil, err
+	}
+
+	errorBytes, err := ioutil.ReadFile(context.Errorpath)
+	if err != nil {
+		return nil, err
+	}
+
+	outputData := strings.Split(string(outputBytes), "\n")
+	errorData := strings.Split(string(errorBytes), "\n")
+	return &ResultData{&outputData, &errorData}, nil
 }

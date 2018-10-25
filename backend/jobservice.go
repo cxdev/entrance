@@ -4,6 +4,7 @@ import (
 	"entrance/backend/exec"
 	"entrance/backend/job"
 	"entrance/backend/platform"
+	"errors"
 	"log"
 	"strconv"
 	"time"
@@ -106,4 +107,14 @@ func (s *JobService) ExecuteJob(jobID int64) error {
 	// cmd.Wait()
 	// cmd.Process.Kill()
 	return nil
+}
+
+func (s *JobService) ReadJobResult(jobID int64) (*exec.ResultData, error) {
+	job := s.Job(jobID)
+	if job == nil {
+		return nil, errors.New("Not found the request job")
+	}
+	jobTag := strconv.FormatInt(jobID, 10)
+	execContext := s.CreateContext(jobTag, job.SysCmd)
+	return execContext.ReadResult()
 }
