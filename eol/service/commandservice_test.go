@@ -1,4 +1,4 @@
-package entrance
+package service
 
 import (
 	"entrance/backend/command"

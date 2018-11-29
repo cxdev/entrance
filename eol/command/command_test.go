@@ -1,7 +1,7 @@
 package command
 
 import (
-	"entrance/backend/platform"
+	"entrance/eol/platform"
 	"reflect"
 	"testing"
 )

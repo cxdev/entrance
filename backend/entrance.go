@@ -1,46 +1,22 @@
 package entrance
 
-import (
-	"entrance/backend/command"
-	"entrance/backend/job"
-)
-
-type App struct {
-	CommandService
-	JobService
+type App interface {
+	StorageFeature
+	ExecuteFeature
 }
 
-func (app *App) AddCommand(name string, commandType command.CommandType, segments string) (int64, error) {
-	command, err := command.New(name, commandType, segments)
-	if err != nil {
-		return -1, err
-	}
-
-	result, err := app.SaveCommand(command)
-	if err != nil {
-		return -1, err
-	}
-
-	cid, err := result.LastInsertId()
-	if err != nil {
-		return -1, err
-	}
-
-	return cid, nil
+type StorageFeature interface {
+	CreateCommand(name string, commandtype CommandType, commandSegments []CommandSegment) (*Command, error)
+	Command(cID uint) (*Command, error)
+	Commands(*QueryCondition) (*[]*Command, error)
+	SaveCommand(*Command) error
+	CreateJob(uint, *Arguments) (*Job, error)
+	Job(jID uint) (*Job, error)
+	Jobs(*QueryCondition) (*[]*Job, error)
+	SaveJob(*Job) error
 }
 
-func (app *App) AddJob(cid int64, arguments string) (int64, error) {
-	command := app.Command(cid)
-	if command == nil {
-		return -1, nil
-	}
-
-	job, err := job.New(command, arguments)
-	if err != nil {
-		return -1, err
-	}
-
-	jobID := app.SaveJob(job)
-	go app.ExecuteJob(jobID)
-	return jobID, nil
+type ExecuteFeature interface {
+	Execute(*Job) error
+	GetResult(*Job) (*ExecuteResult, error)
 }

@@ -1,9 +1,8 @@
-package entrance
+package service
 
 import (
-	"entrance/backend/exec"
-	"entrance/backend/job"
-	"entrance/backend/platform"
+	"entrance/eol/job"
+	"entrance/eol/platform"
 	"errors"
 	"log"
 	"strconv"

@@ -1,6 +1,6 @@
 package command
 
-import "entrance/backend/platform"
+import "entrance/eol/platform"
 
 type Command struct {
 	platform.BaseEntity

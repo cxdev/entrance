@@ -1,9 +1,9 @@
-package entrance
+package service
 
 import (
 	"database/sql"
-	"entrance/backend/command"
-	"entrance/backend/platform"
+	"entrance/eol/command"
+	"entrance/eol/platform"
 	"time"
 )
 
