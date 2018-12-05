@@ -8,11 +8,11 @@ type App interface {
 type StorageFeature interface {
 	CreateCommand(name string, commandtype CommandType, commandSegments []CommandSegment) (*Command, error)
 	Command(cID uint) (*Command, error)
-	Commands(*QueryCondition) (*[]*Command, error)
+	Commands(*QueryCondition) (*[]Command, error)
 	SaveCommand(*Command) error
 	CreateJob(uint, *Arguments) (*Job, error)
 	Job(jID uint) (*Job, error)
-	Jobs(*QueryCondition) (*[]*Job, error)
+	Jobs(*QueryCondition) (*[]Job, error)
 	SaveJob(*Job) error
 }
 
