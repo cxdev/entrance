@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { Divider, Header, Icon } from 'semantic-ui-react'
 import DataBoard from '../components/DataBoard'
 import CommandExecForm from '../components/CommandExecForm'
@@ -7,10 +7,9 @@ import { command } from '../constants/api'
 
 class CommandDetailPage extends FetchComponent {
 
-    getFetchAPI = (props) => {
-        const { commandId } = props.match.params
-        return `/command/${commandId}/info`
-
+    getFetchRequest = () => {
+        const { commandId } = this.props.match.params
+        return command.endpoint.fetchOne(commandId)
     }
 
     handleSubmit = (event) => {

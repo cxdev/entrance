@@ -6,10 +6,9 @@ import { job } from '../constants/api'
 
 class JobDetailPage extends FetchComponent {
 
-    getFetchAPI = (props) => {
-        const { jobId } = props.match.params
-        return `/job/${jobId}/info`
-
+    getFetchRequest = () => {
+        const { jobId } = this.props.match.params
+        return job.endpoint.fetchOne(jobId)
     }
 
     handleSubmit = (event) => {

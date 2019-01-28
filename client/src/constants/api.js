@@ -1,5 +1,9 @@
 const command = {
-    'endpoint': '/command',
+    'endpoint': {
+        'add': '/command/add',
+        'find': '/command',
+        'fetchOne': (commandId) => `/command/${commandId}/info`
+    },
     'fieldsConfig': [
         { 'key': 'ID' },
         { 'key': 'CreatedAt' },
@@ -14,7 +18,10 @@ const command = {
 }
 
 const job = {
-    'endpoint': '/job',
+    'endpoint': {
+        'find': '/job',
+        'fetchOne': (jobId) => `/job/${jobId}/info`
+    },
     'fieldsConfig': [
         { 'key': 'ID' },
         { 'key': 'CreatedAt' },

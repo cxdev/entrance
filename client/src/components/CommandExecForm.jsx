@@ -31,11 +31,13 @@ class CommandExecForm extends Component {
         }
     }
     handleChange = (e, { name, value }) => {
+        console.info(e)
         let updatedData = Object.assign(this.state.data, { [name]: value })
         this.setState({ data: updatedData })
     }
 
     render = () => {
+        console.info(this.state)
         const { ID, CreatedAt, UpdatedAt, Name, CommandType, CommandSegments, handleSubmit } = this.props
         const segmentItems = CommandSegments.map(commandSegment => <SegmentItem {...commandSegment} handleChange={this.handleChange} />)
         return (

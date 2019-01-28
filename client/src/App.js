@@ -4,6 +4,7 @@ import './App.css';
 import 'semantic-ui-css/semantic.min.css'
 
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import CommandAddPage from './containers/CommandAddPage'
 import CommandsPage from './containers/CommandsPage'
 import CommandDetailPage from './containers/CommandDetailPage'
 import JobsPage from './containers/JobsPage'
@@ -22,6 +23,9 @@ class App extends Component {
                 <Link to="/">Home</Link>
               </li>
               <li>
+                <Link to="/admin/add_command">Add Command</Link>
+              </li>
+              <li>
                 <Link to="/commands/">Commands</Link>
               </li>
               <li>
@@ -31,6 +35,7 @@ class App extends Component {
           </nav>
 
           <Route path="/" exact component={Index} />
+          <Route path="/admin/add_command" component={CommandAddPage} />
           <Route path="/commands/" component={CommandsPage} />
           <Route path="/command/:commandId" component={CommandDetailPage} />
           <Route path="/jobs/" component={JobsPage} />

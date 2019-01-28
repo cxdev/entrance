@@ -10,15 +10,29 @@ export default class FetchComponent extends Component {
         }
     }
 
-    getFetchAPI = (props) => {
-        return props.api
+    componentDidMount = () => {
+        const request = this.getFetchRequest()
+        if (request) {
+            this.fetchRequestToState(request)
+        }
     }
 
-    componentDidMount = () => {
+    getFetchRequest = () => {
+        return this.props.request
+    }
+
+    fetchRequestToState = (request) => {
+        const callBack = (data) => this.setState(data)
+        this.fetchRequest(request, callBack, (errorData) => {
+            console.warn(errorData)
+            callBack(errorData)
+        })
+    }
+
+    fetchRequest = (request, successCallBack, errorCallback = successCallBack) => {
         const time = new Date().toLocaleString()
-        const api = this.getFetchAPI(this.props)
-        if (api) {
-            fetch(api)
+        if (request) {
+            fetch(request)
                 .then(response => {
                     if (response.ok) {
                         return response.json()
@@ -27,7 +41,7 @@ export default class FetchComponent extends Component {
                     }
                 })
                 .then(responseJson => {
-                    this.setState({
+                    successCallBack({
                         "response": responseJson,
                         "isOk": true,
                         "message": null,
@@ -35,8 +49,7 @@ export default class FetchComponent extends Component {
                     })
                 })
                 .catch(error => {
-                    console.warn(error)
-                    this.setState({
+                    errorCallback({
                         "isOk": false,
                         "message": error.message,
                         "time": time
@@ -44,11 +57,12 @@ export default class FetchComponent extends Component {
                 }
                 )
         } else {
-            this.setState({
+            errorCallback({
                 "isOk": false,
-                "message": "No API for fetching",
+                "message": "No Request for fetching",
                 "time": time
             })
         }
     }
+
 }
