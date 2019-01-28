@@ -49,18 +49,14 @@ class CommandAddForm extends Component {
         }))
     }
 
-    // TODO: bug
     removeSegment = (i) => {
-        console.info(i)
-        console.info(this.state)
         this.setState((previousState) => {
             let segments = [...previousState.segments]
-            console.info(segments)
+            segments.splice(i, 1)
             return {
-                "segments": segments.splice(i, 1)
+                "segments": segments
             }
         })
-        console.info(this.state)
     }
 
     render = () => {
