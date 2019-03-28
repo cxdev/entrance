@@ -3,6 +3,7 @@ import { Divider, Header, Icon } from 'semantic-ui-react'
 import DataBoard from '../components/DataBoard'
 import FetchComponent from '../components/FetchComponent'
 import { job } from '../constants/api'
+import JobResultPage from './JobResultPage'
 
 class JobDetailPage extends FetchComponent {
 
@@ -26,6 +27,7 @@ class JobDetailPage extends FetchComponent {
                     </Header>
                 </Divider>
                 {jobDetail}
+                <JobResultPage jobId={this.props.match.params.jobId} />
             </React.Fragment>
         )
     }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import FetchComponent from '../components/FetchComponent';
+import { fetchRequest } from '../components/FetchComponent';
 import CommandAddForm from '../components/CommandAddForm'
 import { command } from '../constants/api'
 
@@ -8,8 +8,20 @@ class CommandAddPage extends Component {
         console.info(formData)
         const callBack = (data) => {
             console.info(data)
+            if (data.isOk) {
+                this.props.history.push(`/commands/`);
+            }
         }
-        // this.fetchApiToState(callBack)
+        const request = new Request(command.endpoint.add,
+            {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            })
+        fetchRequest(request, callBack)
     }
 
     render = () => (

@@ -1,6 +1,42 @@
 import { Component } from 'react';
 
-export default class FetchComponent extends Component {
+const fetchRequest = (request, successCallBack, errorCallback = successCallBack) => {
+    const time = new Date().toLocaleString()
+    if (request) {
+        fetch(request)
+            .then(response => {
+                if (response.ok) {
+                    return response.json()
+                } else {
+                    throw new Error('Response with code:', response.ok)
+                }
+            })
+            .then(responseJson => {
+                successCallBack({
+                    "response": responseJson,
+                    "isOk": true,
+                    "message": null,
+                    "time": time
+                })
+            })
+            .catch(error => {
+                errorCallback({
+                    "isOk": false,
+                    "message": error.message,
+                    "time": time
+                })
+            }
+            )
+    } else {
+        errorCallback({
+            "isOk": false,
+            "message": "No Request for fetching",
+            "time": time
+        })
+    }
+}
+
+class FetchComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -23,46 +59,12 @@ export default class FetchComponent extends Component {
 
     fetchRequestToState = (request) => {
         const callBack = (data) => this.setState(data)
-        this.fetchRequest(request, callBack, (errorData) => {
+        fetchRequest(request, callBack, (errorData) => {
             console.warn(errorData)
             callBack(errorData)
         })
     }
-
-    fetchRequest = (request, successCallBack, errorCallback = successCallBack) => {
-        const time = new Date().toLocaleString()
-        if (request) {
-            fetch(request)
-                .then(response => {
-                    if (response.ok) {
-                        return response.json()
-                    } else {
-                        throw new Error('Response with code:', response.ok)
-                    }
-                })
-                .then(responseJson => {
-                    successCallBack({
-                        "response": responseJson,
-                        "isOk": true,
-                        "message": null,
-                        "time": time
-                    })
-                })
-                .catch(error => {
-                    errorCallback({
-                        "isOk": false,
-                        "message": error.message,
-                        "time": time
-                    })
-                }
-                )
-        } else {
-            errorCallback({
-                "isOk": false,
-                "message": "No Request for fetching",
-                "time": time
-            })
-        }
-    }
-
 }
+
+export default FetchComponent
+export { fetchRequest }

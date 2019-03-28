@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Divider, Header, Icon } from 'semantic-ui-react'
 import DataBoard from '../components/DataBoard'
 import CommandExecForm from '../components/CommandExecForm'
-import FetchComponent from '../components/FetchComponent'
+import FetchComponent, { fetchRequest } from '../components/FetchComponent'
 import { command } from '../constants/api'
 
 class CommandDetailPage extends FetchComponent {
@@ -12,8 +12,34 @@ class CommandDetailPage extends FetchComponent {
         return command.endpoint.fetchOne(commandId)
     }
 
-    handleSubmit = (event) => {
-        console.info(event)
+    getExecuteRequest = (json) => {
+        const { commandId } = this.props.match.params
+        const endpoint = command.endpoint.execute(commandId)
+        return new Request(
+            endpoint,
+            {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(json)
+            }
+        )
+    }
+
+    handleSubmit = (formData) => {
+        console.info(formData)
+        const callBack = (data) => {
+            console.info(data)
+            if (data.isOk) {
+                this.props.history.push(`/job/${data.response.Data}`);
+            }
+        }
+
+        const request = this.getExecuteRequest(formData)
+
+        fetchRequest(request, callBack)
     }
 
     render = () => {

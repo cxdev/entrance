@@ -49,7 +49,6 @@ const DataTableHeader = (fieldsConfig) => (
     <Table.Header>
         <Table.Row>
             {fieldsConfig.map((field, i) => <Table.HeaderCell key={i}>{field.name || field.key}</Table.HeaderCell>)}
-            <Table.HeaderCell>abc</Table.HeaderCell>
         </Table.Row>
     </Table.Header>
 )

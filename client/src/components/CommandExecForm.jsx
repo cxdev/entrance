@@ -30,8 +30,7 @@ class CommandExecForm extends Component {
             data: {}
         }
     }
-    handleChange = (e, { name, value }) => {
-        console.info(e)
+    handleChange = (_, { name, value }) => {
         let updatedData = Object.assign(this.state.data, { [name]: value })
         this.setState({ data: updatedData })
     }
@@ -39,7 +38,7 @@ class CommandExecForm extends Component {
     render = () => {
         console.info(this.state)
         const { ID, CreatedAt, UpdatedAt, Name, CommandType, CommandSegments, handleSubmit } = this.props
-        const segmentItems = CommandSegments.map(commandSegment => <SegmentItem {...commandSegment} handleChange={this.handleChange} />)
+        const segmentItems = CommandSegments.map((commandSegment, i) => <SegmentItem key={i} {...commandSegment} handleChange={this.handleChange} />)
         return (
             <Form onSubmit={() => handleSubmit(this.state.data)}>
                 {segmentItems}

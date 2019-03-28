@@ -1,8 +1,9 @@
 const command = {
     'endpoint': {
-        'add': '/command/add',
+        'add': '/admin/command/add',
         'find': '/command',
-        'fetchOne': (commandId) => `/command/${commandId}/info`
+        'fetchOne': (commandId) => `/command/${commandId}/info`,
+        'execute': (commandId) => `/command/${commandId}/execute`
     },
     'fieldsConfig': [
         { 'key': 'ID' },
@@ -20,7 +21,8 @@ const command = {
 const job = {
     'endpoint': {
         'find': '/job',
-        'fetchOne': (jobId) => `/job/${jobId}/info`
+        'fetchOne': (jobId) => `/job/${jobId}/info`,
+        'result': (jobId) => `/job/${jobId}/result`
     },
     'fieldsConfig': [
         { 'key': 'ID' },
