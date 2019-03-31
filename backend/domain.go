@@ -25,9 +25,9 @@ type Base struct {
 
 type Command struct {
 	Base
-	Name            string
-	CommandType     CommandType
-	CommandSegments []CommandSegment
+	Name            string           `yaml:"name"`
+	CommandType     CommandType      `yaml:"command_type"`
+	CommandSegments []CommandSegment `yaml:"segments"`
 }
 
 type JobStatus int
