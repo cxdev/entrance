@@ -22,7 +22,7 @@ type CommonResponse struct {
 type AddCommandReqBody struct {
 	Name        string                    `json:"name"`
 	CommandType entrance.CommandType      `json:"command_type"`
-	Segments    []entrance.CommandSegment `json: "segments`
+	Segments    []entrance.CommandSegment `json:"segments"`
 }
 
 func NewRouter(app entrance.App) *Router {
